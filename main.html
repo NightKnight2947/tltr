@@ -1,0 +1,1269 @@
+<!doctype html>
+<html lang="de">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="theme-color" content="#0b0f14" />
+  <title>Too Lazy To Read</title>
+  <style>
+    :root {
+      color-scheme: dark;
+      --bg: #070b10;
+      --bg2: #0b1220;
+      --card: rgba(15, 22, 34, 0.82);
+      --card-strong: rgba(18, 27, 42, 0.94);
+      --line: rgba(255,255,255,0.08);
+      --text: #e8eef8;
+      --muted: #98a7bd;
+      --accent: #8ab4ff;
+      --accent2: #67e8f9;
+      --good: #22c55e;
+      --warn: #f59e0b;
+      --danger: #fb7185;
+      --shadow: 0 18px 60px rgba(0,0,0,0.42);
+      --radius: 24px;
+      --radius-sm: 16px;
+    }
+
+    * { box-sizing: border-box; }
+    html, body {
+      margin: 0;
+      min-height: 100%;
+      background:
+        radial-gradient(1200px 900px at 10% -10%, rgba(138,180,255,0.18), transparent 45%),
+        radial-gradient(900px 700px at 100% 0%, rgba(103,232,249,0.13), transparent 38%),
+        linear-gradient(180deg, var(--bg), var(--bg2));
+      color: var(--text);
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      overscroll-behavior: none;
+    }
+
+    body {
+      -webkit-font-smoothing: antialiased;
+      text-rendering: geometricPrecision;
+    }
+
+    a { color: inherit; }
+
+    .shell {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding:
+        max(16px, env(safe-area-inset-top))
+        max(16px, env(safe-area-inset-right))
+        calc(18px + env(safe-area-inset-bottom))
+        max(16px, env(safe-area-inset-left));
+    }
+
+    header {
+      display: grid;
+      gap: 12px;
+      margin-bottom: 14px;
+    }
+
+    .topbar {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    .titlewrap {
+      display: grid;
+      gap: 6px;
+    }
+
+    h1 {
+      margin: 0;
+      font-size: clamp(2rem, 6vw, 3.2rem);
+      line-height: 0.95;
+      letter-spacing: -0.05em;
+    }
+
+    .subtitle {
+      margin: 0;
+      color: var(--muted);
+      font-size: 0.98rem;
+      max-width: 64ch;
+    }
+
+    .chips {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 9px 12px;
+      border: 1px solid var(--line);
+      background: rgba(255,255,255,0.03);
+      border-radius: 999px;
+      color: var(--text);
+      font-size: 0.9rem;
+      backdrop-filter: blur(14px);
+    }
+
+    .chip .dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--muted);
+      box-shadow: 0 0 0 4px rgba(255,255,255,0.04);
+    }
+
+    .chip.ok .dot { background: var(--good); }
+    .chip.warn .dot { background: var(--warn); }
+    .chip.err .dot { background: var(--danger); }
+
+    .grid {
+      display: grid;
+      grid-template-columns: 1.1fr 0.9fr;
+      gap: 14px;
+      align-items: start;
+    }
+
+    @media (max-width: 900px) {
+      .grid { grid-template-columns: 1fr; }
+    }
+
+    .card {
+      border: 1px solid var(--line);
+      background: var(--card);
+      box-shadow: var(--shadow);
+      border-radius: var(--radius);
+      backdrop-filter: blur(18px);
+      overflow: hidden;
+    }
+
+    .card .inner {
+      padding: 16px;
+    }
+
+    .nowplaying {
+      display: grid;
+      gap: 14px;
+    }
+
+    .hero {
+      display: grid;
+      grid-template-columns: 84px 1fr;
+      gap: 14px;
+      align-items: center;
+      padding: 16px;
+      background: linear-gradient(180deg, rgba(255,255,255,0.04), transparent);
+      border-bottom: 1px solid var(--line);
+    }
+
+    .art {
+      width: 84px;
+      height: 84px;
+      border-radius: 22px;
+      background:
+        radial-gradient(circle at 30% 30%, rgba(255,255,255,0.2), transparent 45%),
+        linear-gradient(135deg, rgba(138,180,255,0.95), rgba(103,232,249,0.85));
+      position: relative;
+      box-shadow: inset 0 1px 0 rgba(255,255,255,0.28), 0 18px 30px rgba(0,0,0,0.25);
+    }
+
+    .art::after {
+      content: "";
+      position: absolute;
+      inset: 14px;
+      border-radius: 18px;
+      border: 2px solid rgba(8,12,18,0.25);
+      background:
+        radial-gradient(circle at 35% 35%, rgba(255,255,255,0.75), rgba(255,255,255,0.08) 34%, transparent 36%),
+        linear-gradient(135deg, rgba(7,11,16,0.2), rgba(7,11,16,0));
+      opacity: 0.9;
+    }
+
+    .tracktitle {
+      margin: 0 0 6px;
+      font-size: 1.15rem;
+      line-height: 1.25;
+      letter-spacing: -0.02em;
+      word-break: break-word;
+    }
+
+    .trackmeta {
+      margin: 0;
+      color: var(--muted);
+      font-size: 0.92rem;
+      word-break: break-word;
+    }
+
+    .section {
+      display: grid;
+      gap: 10px;
+    }
+
+    .labelrow {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      color: var(--muted);
+      font-size: 0.88rem;
+    }
+
+    label {
+      color: var(--muted);
+      font-size: 0.88rem;
+    }
+
+    select, input[type="number"], input[type="search"], input[type="range"] {
+      width: 100%;
+      border: 1px solid var(--line);
+      background: rgba(255,255,255,0.03);
+      color: var(--text);
+      border-radius: 16px;
+      padding: 12px 14px;
+      outline: none;
+      font: inherit;
+    }
+
+    select:focus, input:focus {
+      border-color: rgba(138,180,255,0.5);
+      box-shadow: 0 0 0 4px rgba(138,180,255,0.12);
+    }
+
+    input[type="range"] {
+      padding: 12px 0;
+      accent-color: var(--accent);
+      height: 40px;
+    }
+
+    .controls {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 10px;
+    }
+
+    @media (max-width: 540px) {
+      .controls { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    }
+
+    button {
+      appearance: none;
+      border: 1px solid var(--line);
+      background: rgba(255,255,255,0.04);
+      color: var(--text);
+      border-radius: 16px;
+      padding: 12px 14px;
+      font: inherit;
+      font-weight: 650;
+      cursor: pointer;
+      transition: transform .08s ease, background .18s ease, border-color .18s ease, opacity .18s ease;
+      box-shadow: 0 10px 24px rgba(0,0,0,0.2);
+    }
+
+    button:hover { background: rgba(255,255,255,0.07); }
+    button:active { transform: translateY(1px) scale(0.99); }
+    button.primary {
+      border-color: rgba(138,180,255,0.34);
+      background: linear-gradient(135deg, rgba(138,180,255,0.24), rgba(103,232,249,0.14));
+    }
+    button.good { border-color: rgba(34,197,94,0.35); }
+    button.danger { border-color: rgba(251,113,133,0.3); }
+
+    .seekwrap {
+      display: grid;
+      gap: 10px;
+      align-items: center;
+    }
+
+    .times {
+      display: flex;
+      justify-content: space-between;
+      color: var(--muted);
+      font-variant-numeric: tabular-nums;
+      font-size: 0.88rem;
+    }
+
+    .bar {
+      position: relative;
+      height: 12px;
+      border-radius: 999px;
+      background: rgba(255,255,255,0.07);
+      overflow: hidden;
+      cursor: pointer;
+      touch-action: pan-y;
+    }
+
+    .bar .fill {
+      position: absolute;
+      inset: 0 auto 0 0;
+      width: 0%;
+      background: linear-gradient(90deg, rgba(138,180,255,0.95), rgba(103,232,249,0.95));
+      border-radius: inherit;
+    }
+
+    .bar .knob {
+      position: absolute;
+      top: 50%;
+      transform: translate(-50%, -50%);
+      left: 0%;
+      width: 18px;
+      height: 18px;
+      border-radius: 50%;
+      background: #fff;
+      box-shadow: 0 4px 18px rgba(0,0,0,0.35);
+      border: 4px solid rgba(138,180,255,0.9);
+      pointer-events: none;
+    }
+
+    .tracklist {
+      display: grid;
+      gap: 8px;
+      max-height: 70vh;
+      overflow: auto;
+      padding-right: 2px;
+    }
+
+    .trackitem {
+      display: grid;
+      gap: 4px;
+      padding: 12px 12px;
+      border-radius: 18px;
+      border: 1px solid var(--line);
+      background: rgba(255,255,255,0.03);
+      cursor: pointer;
+    }
+
+    .trackitem.active {
+      border-color: rgba(138,180,255,0.4);
+      background: linear-gradient(135deg, rgba(138,180,255,0.16), rgba(103,232,249,0.08));
+    }
+
+    .trackitem .name {
+      font-weight: 650;
+      word-break: break-word;
+    }
+
+    .trackitem .path {
+      color: var(--muted);
+      font-size: 0.85rem;
+      word-break: break-word;
+    }
+
+    .trackitem .minirow {
+      display: flex;
+      justify-content: space-between;
+      gap: 10px;
+      align-items: center;
+      color: var(--muted);
+      font-size: 0.8rem;
+    }
+
+    .footerbar {
+      display: grid;
+      gap: 10px;
+      margin-top: 14px;
+    }
+
+    .smallgrid {
+      display: grid;
+      grid-template-columns: 1fr 130px;
+      gap: 10px;
+    }
+
+    @media (max-width: 540px) {
+      .smallgrid { grid-template-columns: 1fr; }
+    }
+
+    .hint {
+      color: var(--muted);
+      font-size: 0.88rem;
+      line-height: 1.45;
+    }
+
+    .toast {
+      position: fixed;
+      left: 50%;
+      bottom: calc(18px + env(safe-area-inset-bottom));
+      transform: translateX(-50%) translateY(16px);
+      opacity: 0;
+      pointer-events: none;
+      max-width: min(92vw, 520px);
+      padding: 12px 14px;
+      border-radius: 16px;
+      border: 1px solid var(--line);
+      background: rgba(15,22,34,0.96);
+      box-shadow: var(--shadow);
+      transition: opacity .2s ease, transform .2s ease;
+      z-index: 30;
+    }
+
+    .toast.show {
+      opacity: 1;
+      transform: translateX(-50%) translateY(0);
+    }
+
+    .spinner {
+      width: 15px;
+      height: 15px;
+      border-radius: 50%;
+      border: 2px solid rgba(255,255,255,0.2);
+      border-top-color: #fff;
+      animation: spin 0.9s linear infinite;
+      display: inline-block;
+      vertical-align: middle;
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+
+    .mutedbox {
+      border: 1px dashed rgba(255,255,255,0.12);
+      background: rgba(255,255,255,0.025);
+      border-radius: 18px;
+      padding: 14px;
+      color: var(--muted);
+      line-height: 1.5;
+      font-size: 0.92rem;
+    }
+
+    .progressrow {
+      display: grid;
+      gap: 8px;
+    }
+
+    .kbd {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-width: 28px;
+      padding: 3px 7px;
+      border-radius: 8px;
+      border: 1px solid var(--line);
+      background: rgba(255,255,255,0.04);
+      font-size: 0.78rem;
+      color: var(--muted);
+    }
+
+    .row {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      align-items: center;
+    }
+
+    .sep {
+      height: 1px;
+      background: var(--line);
+      margin: 4px 0;
+    }
+
+    .statusline {
+      display: flex;
+      justify-content: space-between;
+      gap: 10px;
+      color: var(--muted);
+      font-size: 0.88rem;
+      flex-wrap: wrap;
+    }
+
+    .sr-only {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      padding: 0;
+      margin: -1px;
+      overflow: hidden;
+      clip: rect(0,0,0,0);
+      white-space: nowrap;
+      border: 0;
+    }
+  </style>
+</head>
+<body>
+  <div class="shell">
+    <header>
+      <div class="topbar">
+        <div class="titlewrap">
+          <h1>Too Lazy To Read</h1>
+          <p class="subtitle">Eine mobile Audio-Seite für Hörbücher und Podcasts mit Playlist, Lautstärke, Fortschrittsbalken, Skip-Tasten, Sleep-Timer und lokalem Cache für Offline-Wiedergabe nach dem ersten Laden.</p>
+        </div>
+        <div class="chips">
+          <div class="chip" id="repoChip"><span class="dot"></span><span id="repoChipText">Repo wird geprüft …</span></div>
+          <div class="chip" id="netChip"><span class="dot"></span><span id="netChipText">Online</span></div>
+          <div class="chip" id="cacheChip"><span class="dot"></span><span id="cacheChipText">Kein Track gecacht</span></div>
+        </div>
+      </div>
+    </header>
+
+    <main class="grid">
+      <section class="card nowplaying">
+        <div class="hero">
+          <div class="art" aria-hidden="true"></div>
+          <div>
+            <h2 class="tracktitle" id="nowTitle">Noch nichts ausgewählt</h2>
+            <p class="trackmeta" id="nowMeta">Die MP3s werden direkt aus dem GitHub-Repo geladen.</p>
+          </div>
+        </div>
+
+        <div class="inner section">
+          <div class="smallgrid">
+            <div>
+              <label for="trackSelect">Was soll abgespielt werden?</label>
+              <select id="trackSelect" aria-label="Track auswählen">
+                <option value="">Lade Tracks …</option>
+              </select>
+            </div>
+            <div>
+              <label for="search">Filter</label>
+              <input id="search" type="search" placeholder="Dateiname oder Pfad" />
+            </div>
+          </div>
+
+          <div class="controls">
+            <button class="primary" id="playBtn">Play</button>
+            <button id="prevBtn">◀︎ 15s</button>
+            <button id="nextBtn">30s ▶︎</button>
+            <button class="good" id="offlineBtn">Offline puffern</button>
+          </div>
+
+          <div class="progressrow">
+            <div class="bar" id="seekBar" role="slider" aria-label="Abspielposition">
+              <div class="fill" id="seekFill"></div>
+              <div class="knob" id="seekKnob"></div>
+            </div>
+            <div class="times">
+              <span id="elapsed">0:00</span>
+              <span id="duration">0:00</span>
+            </div>
+          </div>
+
+          <div class="controls">
+            <button id="back5Btn">◀︎ 5s</button>
+            <button id="forward5Btn">5s ▶︎</button>
+            <button id="muteBtn">Mute</button>
+            <button id="stopBtn" class="danger">Stop</button>
+          </div>
+
+          <div class="section">
+            <div class="labelrow">
+              <label for="volume">Lautstärke</label>
+              <span id="volumeLabel">80%</span>
+            </div>
+            <input id="volume" type="range" min="0" max="1" step="0.01" value="0.8" />
+          </div>
+
+          <div class="section">
+            <div class="labelrow">
+              <label for="speed">Geschwindigkeit</label>
+              <span id="speedLabel">1.00×</span>
+            </div>
+            <input id="speed" type="range" min="0.5" max="2" step="0.05" value="1" />
+          </div>
+
+          <div class="section">
+            <div class="labelrow">
+              <label for="sleepMinutes">Sleep-Timer in Minuten</label>
+              <span id="sleepState">Aus</span>
+            </div>
+            <div class="smallgrid">
+              <input id="sleepMinutes" type="number" min="1" max="720" step="1" placeholder="z. B. 25" />
+              <button id="sleepBtn">Timer starten</button>
+            </div>
+            <div class="statusline">
+              <span>Countdown: <strong id="sleepCountdown">—</strong></span>
+              <span class="row">
+                <span class="kbd">Space</span><span>Play/Pause</span>
+                <span class="kbd">←</span><span>15s</span>
+                <span class="kbd">→</span><span>30s</span>
+              </span>
+            </div>
+          </div>
+
+          <div class="sep"></div>
+
+          <div class="footerbar">
+            <div class="statusline">
+              <span id="statusText">Bereit.</span>
+              <span id="trackCountText">0 Tracks</span>
+            </div>
+            <div class="mutedbox" id="emptyState">
+              Wenn das GitHub-Repo MP3-Dateien enthält, erscheinen sie hier automatisch. Der Browser lädt dann die Liste aus der Repository-Struktur, cached ausgewählte Titel lokal und kann sie danach auch ohne Verbindung weiter abspielen.
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <aside class="card">
+        <div class="inner">
+          <div class="section">
+            <div class="labelrow">
+              <label>Playlist</label>
+              <span id="filteredCount">0 sichtbar</span>
+            </div>
+            <div class="tracklist" id="trackList"></div>
+          </div>
+          <div class="sep"></div>
+          <div class="section">
+            <div class="labelrow">
+              <label>Hinweise</label>
+            </div>
+            <div class="hint">
+              Für Offline-Wiedergabe wird der aktuell ausgewählte Track beim Abspielen oder über <strong>Offline puffern</strong> in den lokalen Cache geladen. Danach kann derselbe Titel auch ohne WLAN weiterlaufen, solange der Browser das gecachte Audio verwenden kann.
+            </div>
+          </div>
+        </div>
+      </aside>
+    </main>
+
+    <audio id="audio" preload="none" playsinline crossorigin="anonymous"></audio>
+  </div>
+
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+  <script>
+    (() => {
+      'use strict';
+
+      const REPO = 'NightKnight2947/tltr';
+      const API_BASE = `https://api.github.com/repos/${REPO}`;
+      const RAW_BASE = 'https://raw.githubusercontent.com/NightKnight2947/tltr';
+      const CACHE_NAME = 'tltr-audio-cache-v1';
+
+      const els = {
+        repoChip: document.getElementById('repoChip'),
+        repoChipText: document.getElementById('repoChipText'),
+        netChip: document.getElementById('netChip'),
+        netChipText: document.getElementById('netChipText'),
+        cacheChip: document.getElementById('cacheChip'),
+        cacheChipText: document.getElementById('cacheChipText'),
+        trackSelect: document.getElementById('trackSelect'),
+        search: document.getElementById('search'),
+        trackList: document.getElementById('trackList'),
+        filteredCount: document.getElementById('filteredCount'),
+        trackCountText: document.getElementById('trackCountText'),
+        nowTitle: document.getElementById('nowTitle'),
+        nowMeta: document.getElementById('nowMeta'),
+        playBtn: document.getElementById('playBtn'),
+        prevBtn: document.getElementById('prevBtn'),
+        nextBtn: document.getElementById('nextBtn'),
+        offlineBtn: document.getElementById('offlineBtn'),
+        back5Btn: document.getElementById('back5Btn'),
+        forward5Btn: document.getElementById('forward5Btn'),
+        muteBtn: document.getElementById('muteBtn'),
+        stopBtn: document.getElementById('stopBtn'),
+        volume: document.getElementById('volume'),
+        volumeLabel: document.getElementById('volumeLabel'),
+        speed: document.getElementById('speed'),
+        speedLabel: document.getElementById('speedLabel'),
+        sleepMinutes: document.getElementById('sleepMinutes'),
+        sleepBtn: document.getElementById('sleepBtn'),
+        sleepState: document.getElementById('sleepState'),
+        sleepCountdown: document.getElementById('sleepCountdown'),
+        statusText: document.getElementById('statusText'),
+        elapsed: document.getElementById('elapsed'),
+        duration: document.getElementById('duration'),
+        seekBar: document.getElementById('seekBar'),
+        seekFill: document.getElementById('seekFill'),
+        seekKnob: document.getElementById('seekKnob'),
+        audio: document.getElementById('audio'),
+        toast: document.getElementById('toast'),
+        emptyState: document.getElementById('emptyState'),
+      };
+
+      const state = {
+        branch: 'main',
+        tracks: [],
+        filtered: [],
+        currentIndex: -1,
+        currentObjectUrl: null,
+        sleepTimer: null,
+        sleepDeadline: null,
+        seekRaf: null,
+        cachedKey: null,
+        mutedBeforeMute: null,
+        objectUrlByPath: new Map(),
+      };
+
+      const fmt = ms => {
+        if (!Number.isFinite(ms) || ms < 0) ms = 0;
+        const total = Math.floor(ms / 1000);
+        const h = Math.floor(total / 3600);
+        const m = Math.floor((total % 3600) / 60);
+        const s = total % 60;
+        return h > 0 ? `${h}:${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}` : `${m}:${String(s).padStart(2, '0')}`;
+      };
+
+      const toast = (msg, ms = 2200) => {
+        els.toast.textContent = msg;
+        els.toast.classList.add('show');
+        clearTimeout(toast._t);
+        toast._t = setTimeout(() => els.toast.classList.remove('show'), ms);
+      };
+
+      const setStatus = (msg, kind = 'neutral') => {
+        els.statusText.textContent = msg;
+        els.repoChip.classList.remove('ok', 'warn', 'err');
+        if (kind === 'ok') els.repoChip.classList.add('ok');
+        if (kind === 'warn') els.repoChip.classList.add('warn');
+        if (kind === 'err') els.repoChip.classList.add('err');
+        els.repoChipText.textContent = msg;
+      };
+
+      const setNetwork = () => {
+        const online = navigator.onLine;
+        els.netChip.classList.toggle('ok', online);
+        els.netChip.classList.toggle('err', !online);
+        els.netChipText.textContent = online ? 'Online' : 'Offline';
+      };
+
+      const setCacheBadge = (text, kind = 'warn') => {
+        els.cacheChip.classList.remove('ok', 'warn', 'err');
+        if (kind) els.cacheChip.classList.add(kind);
+        els.cacheChipText.textContent = text;
+      };
+
+      const savePrefs = () => {
+        localStorage.setItem('tltr-volume', String(els.volume.value));
+        localStorage.setItem('tltr-speed', String(els.speed.value));
+        localStorage.setItem('tltr-search', String(els.search.value));
+        localStorage.setItem('tltr-selected-path', state.currentIndex >= 0 ? state.tracks[state.currentIndex].path : '');
+      };
+
+      const loadPrefs = () => {
+        const vol = parseFloat(localStorage.getItem('tltr-volume'));
+        if (!Number.isNaN(vol)) {
+          els.volume.value = String(vol);
+          els.audio.volume = vol;
+        } else {
+          els.audio.volume = parseFloat(els.volume.value);
+        }
+
+        const speed = parseFloat(localStorage.getItem('tltr-speed'));
+        if (!Number.isNaN(speed)) {
+          els.speed.value = String(speed);
+          els.audio.playbackRate = speed;
+        }
+
+        const search = localStorage.getItem('tltr-search') || '';
+        els.search.value = search;
+      };
+
+      const rawUrl = (path) => {
+        const safePath = path.split('/').map(encodeURIComponent).join('/');
+        return `${RAW_BASE}/${encodeURIComponent(state.branch)}/${safePath}`;
+      };
+
+      const iconFor = (path) => {
+        const name = path.toLowerCase();
+        if (/podcast|episode|cast/.test(name)) return '🎙️';
+        if (/audio|book|hör|hoer|read/.test(name)) return '📚';
+        return '🎧';
+      };
+
+      const displayName = (path) => {
+        const file = path.split('/').pop() || path;
+        return file.replace(/\.mp3$/i, '');
+      };
+
+      const humanPath = (path) => path.replace(/\\/g, '/');
+
+      async function fetchJSON(url) {
+        const res = await fetch(url, { headers: { 'Accept': 'application/vnd.github+json' } });
+        if (!res.ok) throw new Error(`${res.status} ${res.statusText}`);
+        return res.json();
+      }
+
+      async function loadRepoTracks() {
+        setStatus('Repo wird geladen …');
+        const repoInfo = await fetchJSON(API_BASE);
+        state.branch = repoInfo.default_branch || 'main';
+
+        const treeUrl = `${API_BASE}/git/trees/${encodeURIComponent(state.branch)}?recursive=1`;
+        const tree = await fetchJSON(treeUrl);
+
+        const nodes = Array.isArray(tree.tree) ? tree.tree : [];
+        const tracks = nodes
+          .filter(item => item && item.type === 'blob' && /\.mp3$/i.test(item.path || ''))
+          .map(item => ({
+            path: item.path,
+            name: displayName(item.path),
+            url: rawUrl(item.path),
+            size: item.size || 0,
+          }))
+          .sort((a, b) => a.path.localeCompare(b.path, 'de'));
+
+        state.tracks = tracks;
+        state.filtered = tracks.slice();
+        els.trackCountText.textContent = `${tracks.length} Track${tracks.length === 1 ? '' : 's'}`;
+
+        if (tracks.length === 0) {
+          els.emptyState.style.display = 'block';
+          els.emptyState.innerHTML = `
+            GitHub meldet für <strong>${REPO}</strong> aktuell keine MP3-Dateien. Sobald im Repo <code>.mp3</code> Dateien liegen, füllt sich die Liste automatisch.
+          `;
+          setStatus('Keine MP3-Dateien gefunden.', 'warn');
+          setCacheBadge('Kein Track gecacht', 'warn');
+        } else {
+          els.emptyState.style.display = 'none';
+          setStatus(`${tracks.length} MP3-Dateien gefunden.`, 'ok');
+        }
+
+        renderSelect();
+        renderList();
+
+        const savedPath = localStorage.getItem('tltr-selected-path') || '';
+        if (savedPath) {
+          const idx = state.tracks.findIndex(t => t.path === savedPath);
+          if (idx >= 0) {
+            els.trackSelect.value = String(idx);
+            selectTrack(idx, { autoplay: false, preferCache: true });
+          }
+        } else if (tracks.length > 0) {
+          els.trackSelect.value = '0';
+          selectTrack(0, { autoplay: false, preferCache: true });
+        }
+      }
+
+      function renderSelect() {
+        els.trackSelect.innerHTML = '';
+        if (state.filtered.length === 0) {
+          const opt = document.createElement('option');
+          opt.value = '';
+          opt.textContent = state.tracks.length === 0 ? 'Keine Tracks verfügbar' : 'Keine Treffer';
+          els.trackSelect.appendChild(opt);
+          return;
+        }
+
+        state.filtered.forEach((t, idx) => {
+          const opt = document.createElement('option');
+          opt.value = String(idx);
+          opt.textContent = `${iconFor(t.path)} ${t.name}`;
+          els.trackSelect.appendChild(opt);
+        });
+      }
+
+      function renderList() {
+        els.trackList.innerHTML = '';
+        const list = state.filtered;
+
+        els.filteredCount.textContent = `${list.length} sichtbar`;
+
+        if (list.length === 0) {
+          const box = document.createElement('div');
+          box.className = 'mutedbox';
+          box.textContent = 'Keine Treffer für den aktuellen Filter.';
+          els.trackList.appendChild(box);
+          return;
+        }
+
+        list.forEach((track) => {
+          const originalIndex = state.tracks.findIndex(t => t.path === track.path);
+          const item = document.createElement('div');
+          item.className = 'trackitem' + (originalIndex === state.currentIndex ? ' active' : '');
+          item.tabIndex = 0;
+          item.role = 'button';
+
+          const cached = state.objectUrlByPath.has(track.path);
+          item.innerHTML = `
+            <div class="name">${iconFor(track.path)} ${track.name}</div>
+            <div class="path">${humanPath(track.path)}</div>
+            <div class="minirow">
+              <span>${cached ? 'Offline bereit' : 'Noch nicht gepuffert'}</span>
+              <span>${track.size ? `${Math.max(1, Math.round(track.size / 1024))} KB` : ''}</span>
+            </div>
+          `;
+
+          const open = () => {
+            els.trackSelect.value = String(state.filtered.indexOf(track));
+            selectTrack(originalIndex, { autoplay: true, preferCache: true });
+          };
+
+          item.addEventListener('click', open);
+          item.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter' || e.key === ' ') {
+              e.preventDefault();
+              open();
+            }
+          });
+
+          els.trackList.appendChild(item);
+        });
+      }
+
+      function updateNowPlaying() {
+        const track = state.tracks[state.currentIndex];
+        if (!track) {
+          els.nowTitle.textContent = 'Noch nichts ausgewählt';
+          els.nowMeta.textContent = 'Die MP3s werden direkt aus dem GitHub-Repo geladen.';
+          els.playBtn.textContent = 'Play';
+          return;
+        }
+
+        els.nowTitle.textContent = track.name;
+        els.nowMeta.textContent = humanPath(track.path);
+        els.playBtn.textContent = els.audio.paused ? 'Play' : 'Pause';
+      }
+
+      function refreshSelectionUI() {
+        const current = state.tracks[state.currentIndex];
+        const cards = [...els.trackList.querySelectorAll('.trackitem')];
+        cards.forEach(card => card.classList.remove('active'));
+
+        if (current) {
+          const idx = state.filtered.findIndex(t => t.path === current.path);
+          if (idx >= 0 && cards[idx]) cards[idx].classList.add('active');
+        }
+        updateNowPlaying();
+      }
+
+      function setSeekUI() {
+        const duration = Number.isFinite(els.audio.duration) ? els.audio.duration : 0;
+        const current = Number.isFinite(els.audio.currentTime) ? els.audio.currentTime : 0;
+        const pct = duration > 0 ? Math.min(100, (current / duration) * 100) : 0;
+        els.seekFill.style.width = `${pct}%`;
+        els.seekKnob.style.left = `${pct}%`;
+        els.elapsed.textContent = fmt(current * 1000);
+        els.duration.textContent = fmt(duration * 1000);
+      }
+
+      function scheduleSeekUpdate() {
+        cancelAnimationFrame(state.seekRaf);
+        const tick = () => {
+          setSeekUI();
+          state.seekRaf = requestAnimationFrame(tick);
+        };
+        state.seekRaf = requestAnimationFrame(tick);
+      }
+
+      function clearSeekUpdate() {
+        cancelAnimationFrame(state.seekRaf);
+        state.seekRaf = null;
+      }
+
+      async function ensureCachedResponse(track) {
+        const url = track.url;
+        const cache = await caches.open(CACHE_NAME);
+        let response = await cache.match(url);
+
+        if (!response) {
+          response = await fetch(url, { mode: 'cors' });
+          if (!response.ok) throw new Error(`Download fehlgeschlagen: ${response.status}`);
+          await cache.put(url, response.clone());
+          setCacheBadge('Track gecacht', 'ok');
+        } else {
+          setCacheBadge('Track aus Cache', 'ok');
+        }
+
+        return response;
+      }
+
+      async function ensureObjectUrl(track) {
+        if (state.objectUrlByPath.has(track.path)) {
+          return state.objectUrlByPath.get(track.path);
+        }
+        const response = await ensureCachedResponse(track);
+        const blob = await response.blob();
+        const objectUrl = URL.createObjectURL(blob);
+        state.objectUrlByPath.set(track.path, objectUrl);
+        state.cachedKey = track.path;
+        return objectUrl;
+      }
+
+      async function selectTrack(index, { autoplay = false, preferCache = true } = {}) {
+        if (index < 0 || index >= state.tracks.length) return;
+        state.currentIndex = index;
+        const track = state.tracks[index];
+        localStorage.setItem('tltr-selected-path', track.path);
+
+        setStatus(`Lade ${track.name} …`);
+        refreshSelectionUI();
+
+        try {
+          const src = preferCache ? await ensureObjectUrl(track) : track.url;
+          els.audio.src = src;
+          els.audio.load();
+          if (autoplay) {
+            await els.audio.play();
+          }
+          setStatus(`${track.name} bereit.`, 'ok');
+          toast(preferCache ? 'Track geladen und gepuffert.' : 'Track geladen.');
+        } catch (err) {
+          console.error(err);
+          setStatus('Laden fehlgeschlagen.', 'err');
+          toast('Konnte den Track nicht laden.');
+        } finally {
+          updateNowPlaying();
+          renderList();
+        }
+      }
+
+      async function togglePlay() {
+        if (!state.tracks.length) return;
+        if (state.currentIndex < 0) {
+          await selectTrack(0, { autoplay: true, preferCache: true });
+          return;
+        }
+
+        try {
+          if (els.audio.paused) {
+            await els.audio.play();
+          } else {
+            els.audio.pause();
+          }
+        } catch (err) {
+          console.error(err);
+          toast('Play wurde vom Browser blockiert.');
+        }
+        updateNowPlaying();
+      }
+
+      function skip(seconds) {
+        if (!Number.isFinite(els.audio.duration)) return;
+        els.audio.currentTime = Math.min(Math.max(0, els.audio.currentTime + seconds), els.audio.duration);
+        setSeekUI();
+      }
+
+      function stopPlayback() {
+        els.audio.pause();
+        els.audio.currentTime = 0;
+        updateNowPlaying();
+        setSeekUI();
+      }
+
+      function nextTrack() {
+        if (!state.tracks.length) return;
+        const next = state.currentIndex + 1 < state.tracks.length ? state.currentIndex + 1 : 0;
+        selectTrack(next, { autoplay: true, preferCache: true });
+      }
+
+      function prevTrack() {
+        if (!state.tracks.length) return;
+        const prev = state.currentIndex - 1 >= 0 ? state.currentIndex - 1 : state.tracks.length - 1;
+        selectTrack(prev, { autoplay: true, preferCache: true });
+      }
+
+      function updateVolumeLabel() {
+        els.volumeLabel.textContent = `${Math.round(els.volume.value * 100)}%`;
+        els.audio.volume = parseFloat(els.volume.value);
+        savePrefs();
+      }
+
+      function updateSpeedLabel() {
+        els.speedLabel.textContent = `${parseFloat(els.speed.value).toFixed(2)}×`;
+        els.audio.playbackRate = parseFloat(els.speed.value);
+        savePrefs();
+      }
+
+      function setMuted(nextMuted) {
+        els.audio.muted = nextMuted;
+        els.muteBtn.textContent = nextMuted ? 'Unmute' : 'Mute';
+      }
+
+      function startSleepTimer(minutes) {
+        const mins = Number(minutes);
+        if (!Number.isFinite(mins) || mins <= 0) {
+          toast('Bitte eine Minutenanzahl eingeben.');
+          return;
+        }
+
+        clearSleepTimer();
+        state.sleepDeadline = Date.now() + mins * 60 * 1000;
+        els.sleepState.textContent = 'Läuft';
+        toast(`Sleep-Timer läuft: ${mins} min`);
+
+        state.sleepTimer = setInterval(() => {
+          const remaining = state.sleepDeadline - Date.now();
+          if (remaining <= 0) {
+            clearSleepTimer();
+            els.audio.pause();
+            els.audio.volume = parseFloat(els.volume.value);
+            updateNowPlaying();
+            toast('Sleep-Timer beendet.');
+            return;
+          }
+          els.sleepCountdown.textContent = fmt(remaining);
+        }, 1000);
+
+        els.sleepCountdown.textContent = fmt(mins * 60 * 1000);
+      }
+
+      function clearSleepTimer() {
+        if (state.sleepTimer) clearInterval(state.sleepTimer);
+        state.sleepTimer = null;
+        state.sleepDeadline = null;
+        els.sleepState.textContent = 'Aus';
+        els.sleepCountdown.textContent = '—';
+      }
+
+      function updateSleepFromInput() {
+        const mins = parseInt(els.sleepMinutes.value, 10);
+        startSleepTimer(mins);
+      }
+
+      function updateMediaSession() {
+        if (!('mediaSession' in navigator)) return;
+        const track = state.tracks[state.currentIndex];
+        if (track) {
+          navigator.mediaSession.metadata = new MediaMetadata({
+            title: track.name,
+            artist: 'Too Lazy To Read',
+            album: REPO,
+            artwork: [
+              { src: 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256"><defs><linearGradient id="g" x1="0" x2="1" y1="0" y2="1"><stop stop-color="#8ab4ff"/><stop offset="1" stop-color="#67e8f9"/></linearGradient></defs><rect width="256" height="256" rx="56" fill="url(#g)"/><circle cx="128" cy="128" r="62" fill="#09111b" opacity=".18"/><circle cx="128" cy="128" r="40" fill="#ffffff" opacity=".8"/></svg>`), sizes: '256x256', type: 'image/svg+xml' }
+            ]
+          });
+        }
+
+        const actions = {
+          play: () => els.audio.play(),
+          pause: () => els.audio.pause(),
+          previoustrack: () => prevTrack(),
+          nexttrack: () => nextTrack(),
+          seekbackward: (details) => skip(-(details.seekOffset || 10)),
+          seekforward: (details) => skip(details.seekOffset || 30),
+          stop: () => stopPlayback(),
+        };
+
+        Object.entries(actions).forEach(([action, handler]) => {
+          try { navigator.mediaSession.setActionHandler(action, handler); } catch {}
+        });
+      }
+
+      function filterTracks() {
+        const q = els.search.value.trim().toLowerCase();
+        localStorage.setItem('tltr-search', els.search.value);
+
+        state.filtered = state.tracks.filter(t => {
+          if (!q) return true;
+          return t.name.toLowerCase().includes(q) || t.path.toLowerCase().includes(q);
+        });
+
+        renderSelect();
+        renderList();
+      }
+
+      function chooseFromSelect() {
+        const idx = parseInt(els.trackSelect.value, 10);
+        if (Number.isFinite(idx)) {
+          const selected = state.filtered[idx];
+          if (selected) {
+            const realIndex = state.tracks.findIndex(t => t.path === selected.path);
+            selectTrack(realIndex, { autoplay: false, preferCache: true });
+          }
+        }
+      }
+
+      function seekFromEvent(evt) {
+        const rect = els.seekBar.getBoundingClientRect();
+        const clientX = evt.touches ? evt.touches[0].clientX : evt.clientX;
+        const pct = Math.min(1, Math.max(0, (clientX - rect.left) / rect.width));
+        if (Number.isFinite(els.audio.duration)) {
+          els.audio.currentTime = pct * els.audio.duration;
+          setSeekUI();
+        }
+      }
+
+      // Events
+      window.addEventListener('online', setNetwork);
+      window.addEventListener('offline', setNetwork);
+
+      els.trackSelect.addEventListener('change', chooseFromSelect);
+      els.search.addEventListener('input', filterTracks);
+      els.playBtn.addEventListener('click', togglePlay);
+      els.prevBtn.addEventListener('click', prevTrack);
+      els.nextBtn.addEventListener('click', nextTrack);
+      els.offlineBtn.addEventListener('click', async () => {
+        if (state.currentIndex < 0) return toast('Erst einen Track auswählen.');
+        const track = state.tracks[state.currentIndex];
+        try {
+          setStatus(`Puffere ${track.name} …`);
+          await ensureObjectUrl(track);
+          setStatus(`${track.name} ist offline bereit.`, 'ok');
+          toast('Track wurde lokal gepuffert.');
+          renderList();
+        } catch (err) {
+          console.error(err);
+          setStatus('Offline-Pufferung fehlgeschlagen.', 'err');
+          toast('Offline-Pufferung fehlgeschlagen.');
+        }
+      });
+      els.back5Btn.addEventListener('click', () => skip(-5));
+      els.forward5Btn.addEventListener('click', () => skip(5));
+      els.muteBtn.addEventListener('click', () => {
+        if (!els.audio.muted) {
+          state.mutedBeforeMute = els.audio.volume;
+          setMuted(true);
+        } else {
+          setMuted(false);
+          if (state.mutedBeforeMute != null) els.audio.volume = state.mutedBeforeMute;
+        }
+      });
+      els.stopBtn.addEventListener('click', stopPlayback);
+      els.volume.addEventListener('input', updateVolumeLabel);
+      els.speed.addEventListener('input', updateSpeedLabel);
+      els.sleepBtn.addEventListener('click', updateSleepFromInput);
+      els.seekBar.addEventListener('click', seekFromEvent);
+      els.seekBar.addEventListener('touchstart', seekFromEvent, { passive: true });
+
+      els.audio.addEventListener('loadedmetadata', () => {
+        setSeekUI();
+        updateMediaSession();
+      });
+      els.audio.addEventListener('timeupdate', setSeekUI);
+      els.audio.addEventListener('play', () => {
+        els.playBtn.textContent = 'Pause';
+        updateMediaSession();
+        scheduleSeekUpdate();
+      });
+      els.audio.addEventListener('pause', () => {
+        els.playBtn.textContent = 'Play';
+        clearSeekUpdate();
+      });
+      els.audio.addEventListener('ended', () => nextTrack());
+      els.audio.addEventListener('error', (e) => {
+        console.error('Audio error', e);
+        setStatus('Audiowiedergabe fehlgeschlagen.', 'err');
+        toast('Audio konnte nicht abgespielt werden.');
+      });
+
+      document.addEventListener('keydown', (e) => {
+        if (['INPUT', 'SELECT', 'TEXTAREA'].includes(document.activeElement?.tagName)) return;
+        if (e.code === 'Space') { e.preventDefault(); togglePlay(); }
+        if (e.key === 'ArrowLeft') skip(-15);
+        if (e.key === 'ArrowRight') skip(30);
+        if (e.key.toLowerCase() === 'm') els.muteBtn.click();
+      });
+
+      // Init
+      loadPrefs();
+      updateVolumeLabel();
+      updateSpeedLabel();
+      setMuted(false);
+      setNetwork();
+
+      if (!navigator.onLine) {
+        setStatus('Offline – die Repo-Liste kann erst nach Verbindung geladen werden.', 'warn');
+      }
+
+      (async () => {
+        try {
+          if (!window.fetch) throw new Error('Browser unterstützt fetch nicht.');
+          await loadRepoTracks();
+          filterTracks();
+        } catch (err) {
+          console.error(err);
+          setStatus('Repo konnte nicht geladen werden.', 'err');
+          els.emptyState.style.display = 'block';
+          els.emptyState.innerHTML = `
+            Das Repository konnte im Browser nicht geladen werden. Prüfe, ob die Seite über <strong>http(s)</strong> läuft und nicht nur als lokale Datei ohne Netzwerkanfrage geöffnet wurde.
+          `;
+          els.trackSelect.innerHTML = '<option value="">Keine Tracks verfügbar</option>';
+          toast('Repo konnte nicht geladen werden.');
+        }
+      })();
+    })();
+  </script>
+</body>
+</html>
